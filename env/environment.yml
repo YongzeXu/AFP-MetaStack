@@ -1,0 +1,23 @@
+# 示例：从仓库根目录创建环境
+#   conda env create -f env/environment.yml
+#   conda activate afp-metastack
+#
+# PyTorch / torch-scatter 等请按本机 CUDA 版本另行安装（见 environment_setup.txt）。
+
+name: afp-metastack
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy=1.26.*
+  - scikit-learn
+  - biopython
+  - foldseek
+  - pip:
+      - xgboost
+      - transformers
+      # - torch          # 请按 CUDA 从 pytorch.org 安装
+      # - torchdrug      # 安装前确保 torch 与 scatter/cluster 已对齐

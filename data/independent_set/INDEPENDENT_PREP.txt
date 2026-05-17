@@ -1,0 +1,44 @@
+独立测试集（最小公开仓说明）
+================================
+
+根目录 = 本仓库 clone 路径（脚本自动解析，无需写死 /data/yongze/...）。
+
+一、必备文件（自行按 AFPDeepPred 口径准备）
+  data/independent_set/pos_independent.fasta
+  data/independent_set/neg_independent.fasta
+  （可选）data/independent_set/id_map.json
+
+二、特征（本仓仅含 3 个 features 脚本）
+  1) 主表 token-bin（官方 train+test，耗时长）：
+     python features_scripts/extract_esm2_saprot_token_bins.py
+     需设置 AFP_MODELS_ROOT 或 --esm2_model_dir / --saprot_model_dir
+  2) 追加独立集行：
+     python features_scripts/append_independent_token_bins.py
+  3)（可选）有真实 3Di 后重提独立集 SaProt 行：
+     python processing/build_independent_3di_foldseek.py
+     python features_scripts/refresh_independent_saprot_token_bins_with_3di.py
+
+  GearNet 嵌入缓存由 prepare 在训练时写入 features/afp_e_gearnet_mc_emb_cache/。
+  GO/PPI、pLDDT 等扩展 CSV 需自行准备并放入 trained/（路径见 stacking 脚本参数），
+  或在 ensemble 调用中关闭对应特征。
+
+三、一键主流程（推荐）
+  conda activate afp-metastack   # 见 env/environment_setup.txt
+  bash classifier_scripts/run_focal_lift_independent_pipeline.sh
+
+  等价分步：
+    bash classifier_scripts/run_prepare_focal_val_test_official.sh
+    bash classifier_scripts/run_independent_eval.sh
+    bash classifier_scripts/run_focal_official_test_and_independent_xgb_dual_eval.sh
+
+四、默认产物（γ=1.5）
+  trained/ensemble_prep_weighted_heads_gear_npz_focal_g1p5/
+    val_probs_for_ensemble.npz, test_probs_for_ensemble.npz
+  trained/ensemble_prep_independent_weighted_heads_focal_g1p5/
+    test_probs_for_ensemble.npz
+  stacking_official_test_and_independent_focal_g1p5_xgb_robust_rbf_g0003_reglambda15.json
+    → test_metrics（官方 test）、test_metrics_also_holdout_npz（独立集）
+
+五、注意
+  独立集 seq_id 前缀（INDP/INDN）勿与官方 test 的 P_seq_* 混用。
+  跑完后在 stacking JSON 的 test_metrics / test_metrics_also_holdout_npz 中查看指标。

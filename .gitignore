@@ -1,0 +1,29 @@
+# Data & caches (user-provided locally)
+data/train_set/**
+data/test_set/**
+data/independent_set/**
+!data/**/.gitkeep
+!data/**/README*
+!data/**/INDEPENDENT_PREP.txt
+
+features/**
+!features/.gitkeep
+!features/README*
+
+trained/**
+!trained/.gitkeep
+!trained/README*
+
+# Artifacts
+*.npz
+*.npy
+*.joblib
+*.pth
+*.pt
+*.fasta
+*.fa
+*.pdb
+__pycache__/
+*.py[cod]
+.venv/
+venv/

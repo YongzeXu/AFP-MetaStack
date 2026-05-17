@@ -1,0 +1,42 @@
+Conda 环境（通用名：afp-metastack）
+==================================
+
+本仓库不绑定作者本机环境名；请自行创建并激活名为 **afp-metastack** 的 conda 环境
+（也可用任意名称，激活后运行脚本即可）。
+
+一、创建环境（示例）
+
+  conda create -n afp-metastack python=3.11 -y
+  conda activate afp-metastack
+
+  # 按本机 CUDA 安装 PyTorch，例如：
+  # pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+
+  pip install numpy==1.26.4 scikit-learn xgboost transformers biopython
+  pip install torchdrug   # 若失败，见下文「torchdrug」
+
+  # 可选：独立集 3Di
+  conda install -c bioconda foldseek -y
+
+更完整的依赖列表见同目录 environment.yml（可按需增删版本）。
+
+二、运行方式
+
+  cd <本仓库根目录>
+  conda activate afp-metastack
+  # 或：conda run -n afp-metastack python ...
+
+  export AFP_MODELS_ROOT=/path/to/models   # ESM-2 / SaProt / GearNet 权重根目录
+
+三、预训练权重布局（默认在 $AFP_MODELS_ROOT 下）
+
+  facebook/esm2_t33_650M_UR50D
+  westlake-repl/SaProt_650M_AF2
+  gearnet/checkpoints/mc_gearnet_edge.pth
+
+四、版本提示
+
+  - numpy 建议 1.26.x（与部分 RDKit / torchdrug 轮子兼容）。
+  - torchdrug 依赖 torch-scatter / torch-cluster，须与已装 torch、CUDA 版本匹配；
+    可从 https://data.pyg.org/whl/ 选择对应 wheel。
+  - pipeline shell 会优先使用当前已激活环境的 python；也可设置环境变量 PYTHON。
