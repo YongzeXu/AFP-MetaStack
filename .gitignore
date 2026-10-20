@@ -1,10 +1,16 @@
-# Data & caches (user-provided locally)
+# Data splits and generated caches
 data/train_set/**
 data/test_set/**
 data/independent_set/**
 !data/**/.gitkeep
 !data/**/README*
 !data/**/INDEPENDENT_PREP.txt
+
+# Public benchmark inputs included with this repository
+!data/train_set/
+!data/test_set/
+!data/independent_set/
+!data/independent_set/id_map.json
 
 features/**
 !features/.gitkeep
@@ -27,3 +33,11 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Keep the published benchmark FASTA inputs despite the generated-file rules above.
+!data/train_set/pos_train.fasta
+!data/train_set/neg_train.fasta
+!data/test_set/pos_test.fasta
+!data/test_set/neg_test.fasta
+!data/independent_set/pos_independent.fasta
+!data/independent_set/neg_independent.fasta

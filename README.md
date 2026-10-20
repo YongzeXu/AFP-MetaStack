@@ -2,7 +2,7 @@
 
 Leakage-aware **two-level stacking** for antifreeze protein classification: ESM-2 + SaProt + GearNet (Level-1) → Meta-XGBoost (Level-2).
 
-This repository contains **only the code required to reproduce the main pipeline**. It does **not** ship FASTA splits, feature caches, NPZ probability files, checkpoints, paper figures, or ablation suites.
+This repository includes the benchmark FASTA splits used in the manuscript and the feature-extraction and evaluation code. It does not include PDB structures, 3Di inputs, extracted feature caches, NPZ probability files, model checkpoints, paper figures, or ablation suites. Structural inputs and model features can be regenerated following the manuscript methods.
 
 ## Layout
 
@@ -10,7 +10,7 @@ This repository contains **only the code required to reproduce the main pipeline
 classifier_scripts/     # prepare NPZ + Meta-XGB stacking + 4 entry shell scripts
 features_scripts/       # ESM-2 / SaProt token-bin extraction (3 scripts)
 processing/             # optional: independent-set 3Di via Foldseek (1 script)
-data/                   # place AFPDeepPred-aligned FASTA here (see data/README_zh.txt)
+data/                   # train/test/independent FASTA splits (see data/README_zh.txt)
 features/               # generated caches (empty by default)
 trained/                # val/test/independent NPZ + stacking JSON (empty by default)
 env/                    # conda notes
@@ -19,9 +19,9 @@ env/                    # conda notes
 ## Quick start (after data are in place)
 
 1. Create conda env — `env/environment.yml` and `env/environment_setup.txt` (`conda activate afp-metastack`)
-2. Place AFPDeepPred-aligned FASTA under `data/` (see `data/README_zh.txt`)
+2. The benchmark FASTA splits are included under `data/` (see `data/README_zh.txt`)
 3. Set `AFP_MODELS_ROOT` (default `~/models`) for ESM-2 / SaProt / GearNet weights
-4. Build feature caches — `features_scripts/extract_esm2_saprot_token_bins.py` (+ independent append/refresh; see `data/independent_set/INDEPENDENT_PREP.txt`)
+4. Prepare structural inputs and build feature caches following the manuscript methods and scripts under `features_scripts/`
 5. **One-shot main pipeline** (Focal γ=1.5, dual official + independent Meta-XGB):
 
 ```bash
@@ -29,6 +29,8 @@ bash classifier_scripts/run_focal_lift_independent_pipeline.sh
 ```
 
 This runs, in order: official val/test prepare → independent prepare → independent Meta-XGB → dual eval JSON with both official test and independent holdout metrics.
+
+The evaluation scripts also expect the GO/PPI feature CSV inputs documented in their command-line arguments. Those derived files are not part of this dataset release.
 
 Equivalent manual steps:
 
@@ -49,11 +51,19 @@ Internal validation: 15% stratified hold-out from training pool (`random_state=2
 
 **Reference metrics** (paper run, read from stacking JSON after reproduction): official test Acc 97.21%, MCC 0.944, AUC 99.61%; independent holdout Acc 90.85%, MCC 0.820, AUC 94.01%.
 
-## What was removed on purpose
+## Dataset splits
+
+- `data/train_set/`: training pool (7,334 AFPs and 8,482 non-AFPs)
+- `data/test_set/`: manuscript test set 1 (800 AFPs and 957 non-AFPs)
+- `data/independent_set/`: homology-screened manuscript test set 2 (80 AFPs and 73 non-AFPs)
+
+Each split includes class-specific FASTA files. The independent set also includes `id_map.json`, which maps original split identifiers to the IDs used in the released FASTA files. PDB and 3Di files are omitted from this dataset release; regenerate them as described in the manuscript methods when needed for feature extraction.
+
+## What is not included in the repository
 
 - `figure/`, `ablation/`, `configs/`, `classifier_scripts/experimental/`
 - Extra tuning shells (`run_two_branch_*`, train_oof, etc.)
-- Large PDB/BLAST reference trees under `data/raw`, `data/reference`
+- PDB structures, 3Di files, BLAST reference trees, and generated feature caches
 
 ## Citation & license
 
